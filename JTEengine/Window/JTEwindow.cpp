@@ -1,5 +1,6 @@
 #include "pch.h"
 #include "JTEwindow.h"
+#include "JTEinput.h"
 
 
 JTEwindow::JTEwindow(int width, int height, const char* title) {
@@ -16,6 +17,10 @@ void JTEwindow::create() {
 	}
 
 	window = glfwCreateWindow(this->width, this->height, this->title, 0, 0);
+
+	glfwSetKeyCallback(window, (GLFWkeyfun)JTEinput().keyboard);
+	glfwSetMouseButtonCallback(window, (GLFWmousebuttonfun)JTEinput().mouse);
+	glfwSetCursorPosCallback(window, (GLFWcursorposfun)JTEinput().position);
 
 	if (window == 0) {
 		std::cout << "Window not created" << std::endl;

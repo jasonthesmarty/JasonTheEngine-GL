@@ -32,4 +32,4 @@ public:
 
 };
 
-#endif //JTEWINDOW_H
+#endif // ! JTEWINDOW_H
