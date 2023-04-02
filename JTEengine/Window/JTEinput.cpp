@@ -1,6 +1,7 @@
 #include "pch.h"
 #include "JTEinput.h"
 
+
 double mouseX, mouseY;
 
 bool keys[GLFW_KEY_LAST];

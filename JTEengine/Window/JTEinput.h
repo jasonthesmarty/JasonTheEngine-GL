@@ -14,7 +14,7 @@ public:
 	/*
 	* @brief An empty constructor for the Input Class
 	*/
-	JTEinput();
+	JTEinput(); 
 
 	////////// Constructor //////////
 
