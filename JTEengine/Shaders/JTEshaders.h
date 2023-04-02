@@ -6,16 +6,13 @@
 #include "../Dependencies/GLAD/glad.h"
 #include "../Dependencies/GLFW/glfw3.h"
 
+#include "../Standard/JTEstructs.h"
+
 #include "pch.h"
 
 class JTEshaders {
 private:
-	std::string vertexShaderSourceSTD, fragmentShaderSourceSTD;
-	const char* vertexShaderSource = "";
-	const char* fragmentShaderSource = "";
-
-	GLuint vertexShader, fragmentShader;
-	GLuint shaderProgram;
+	JTEstructs::Shaders shader;
 
 public:
 	////////// Constructors //////////

@@ -5,44 +5,44 @@
 JTEstandard jstd;
 
 JTEshaders::JTEshaders() {
-	vertexShaderSourceSTD = jstd.getFileContents("..\\JasonTheEngine\\JTEengine\\Shaders\\vertex.glsl");
-	fragmentShaderSourceSTD = jstd.getFileContents("..\\JasonTheEngine\\JTEengine\\Shaders\\fragment.glsl");
+	shader.VertShaderSrcSTD = jstd.getFileContents("..\\JasonTheEngine\\JTEengine\\Shaders\\vertex.glsl");
+	shader.FragShaderSrcSTD = jstd.getFileContents("..\\JasonTheEngine\\JTEengine\\Shaders\\fragment.glsl");
 	
-	vertexShaderSource = vertexShaderSourceSTD.c_str();
-	fragmentShaderSource = fragmentShaderSourceSTD.c_str();
+	shader.VertShaderSrcCC = shader.VertShaderSrcSTD.c_str();
+	shader.FragShaderSrcCC = shader.FragShaderSrcSTD.c_str();
 	
 	// jstd.println(vertexShaderSource);
 	// jstd.println(fragmentShaderSource);
 }
 
 JTEshaders::JTEshaders(std::string vertexShaderSourceFile, std::string fragmentShaderSourceFile) {
-	vertexShaderSourceSTD = jstd.getFileContents(vertexShaderSourceFile.c_str());
-	fragmentShaderSourceSTD = jstd.getFileContents(fragmentShaderSourceFile.c_str());
+	shader.VertShaderSrcSTD = jstd.getFileContents(vertexShaderSourceFile.c_str());
+	shader.FragShaderSrcSTD = jstd.getFileContents(fragmentShaderSourceFile.c_str());
 
-	vertexShaderSource = vertexShaderSourceSTD.c_str();
-	fragmentShaderSource = fragmentShaderSourceSTD.c_str();
+	shader.VertShaderSrcCC = shader.VertShaderSrcSTD.c_str();
+	shader.FragShaderSrcCC = shader.FragShaderSrcSTD.c_str();
 
 	// jstd.println(vertexShaderSource);
 	// jstd.println(fragmentShaderSource);
 }
 
 void JTEshaders::create() {
-	vertexShader = glCreateShader(GL_VERTEX_SHADER);
-	glShaderSource(vertexShader, 1, &vertexShaderSource, NULL);
-	glCompileShader(vertexShader);
+	shader.vertShader = glCreateShader(GL_VERTEX_SHADER);
+	glShaderSource(shader.vertShader, 1, &shader.VertShaderSrcCC, NULL);
+	glCompileShader(shader.vertShader);
 
-	fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
-	glShaderSource(fragmentShader, 1, &fragmentShaderSource, NULL);
-	glCompileShader(fragmentShader);
+	shader.fragShader = glCreateShader(GL_FRAGMENT_SHADER);
+	glShaderSource(shader.fragShader, 1, &shader.FragShaderSrcCC, NULL);
+	glCompileShader(shader.fragShader);
 
-	shaderProgram = glCreateProgram();
-	glAttachShader(shaderProgram, vertexShader);
-	glAttachShader(shaderProgram, fragmentShader);
-	glLinkProgram(shaderProgram);
+	shader.shaderProgram = glCreateProgram();
+	glAttachShader(shader.shaderProgram, shader.vertShader);
+	glAttachShader(shader.shaderProgram, shader.fragShader);
+	glLinkProgram(shader.shaderProgram);
 }
 
 void JTEshaders::start() {
-	glUseProgram(shaderProgram);
+	glUseProgram(shader.shaderProgram);
 }
 
 void JTEshaders::stop() {
@@ -50,5 +50,5 @@ void JTEshaders::stop() {
 }
 
 void JTEshaders::terminate() {
-	glDeleteProgram(shaderProgram);
+	glDeleteProgram(shader.shaderProgram);
 }

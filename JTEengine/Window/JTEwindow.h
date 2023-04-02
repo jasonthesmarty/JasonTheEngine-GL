@@ -6,14 +6,13 @@
 #include "../Dependencies/GLAD/glad.h"
 #include "../Dependencies/GLFW/glfw3.h"
 
+#include "../Standard/JTEstructs.h"
+
 #include "pch.h"
 
 class JTEwindow {
 private:
-	GLFWwindow* window;
-
-	int width, height;
-	const char* title;
+	JTEstructs::Window win;
 
 public:
 	////////// Constructor //////////

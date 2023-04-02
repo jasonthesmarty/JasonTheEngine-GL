@@ -4,9 +4,9 @@
 
 
 JTEwindow::JTEwindow(int width, int height, const char* title) {
-	this->width = width;
-	this->height = height;
-	this->title = title;
+	win.width = width;
+	win.height = height;
+	win.title = title;
 }
 
 void JTEwindow::create() {
@@ -16,25 +16,25 @@ void JTEwindow::create() {
 		std::cout << "GLFW not initialized" << std::endl;
 	}
 
-	window = glfwCreateWindow(this->width, this->height, this->title, 0, 0);
+	win.window = glfwCreateWindow(win.width, win.height, win.title, 0, 0);
 
-	glfwSetKeyCallback(window, (GLFWkeyfun)JTEinput().keyboard);
-	glfwSetMouseButtonCallback(window, (GLFWmousebuttonfun)JTEinput().mouse);
-	glfwSetCursorPosCallback(window, (GLFWcursorposfun)JTEinput().position);
+	glfwSetKeyCallback(win.window, (GLFWkeyfun)JTEinput().keyboard);
+	glfwSetMouseButtonCallback(win.window, (GLFWmousebuttonfun)JTEinput().mouse);
+	glfwSetCursorPosCallback(win.window, (GLFWcursorposfun)JTEinput().position);
 
-	if (window == 0) {
+	if (win.window == 0) {
 		std::cout << "Window not created" << std::endl;
 	}
 
-	glfwMakeContextCurrent(window);
+	glfwMakeContextCurrent(win.window);
 	gladLoadGLLoader((GLADloadproc)glfwGetProcAddress);
 	glfwSwapInterval(1);
-	glfwShowWindow(window);
+	glfwShowWindow(win.window);
 }
 
 void JTEwindow::update() {
 	glfwPollEvents();
-	glfwSwapBuffers(window);
+	glfwSwapBuffers(win.window);
 
 }
 
@@ -70,11 +70,11 @@ void JTEwindow::changeColor(int colors[4]) {
 }
 
 bool JTEwindow::close() {
-	return glfwWindowShouldClose(window);
+	return glfwWindowShouldClose(win.window);
 }
 
 void JTEwindow::terminate() {
-	glfwDestroyWindow(window);
+	glfwDestroyWindow(win.window);
 	glfwTerminate();
 }
 
