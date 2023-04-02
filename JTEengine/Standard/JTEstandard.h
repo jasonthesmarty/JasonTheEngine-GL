@@ -33,10 +33,17 @@ public:
 	/*
 	* @brief Turns a number value into a string
 	* 
-	* @return std::string - from the input data
+	* @return std::string - From the input data
 	*/
 	template<typename Type>
 	std::string string(Type data);
+
+	/*
+	* @brief Returns the contents of a file in a string
+	* 
+	* @return std::string - Contents of a file
+	*/
+	std::string getFileContents(const char* filename);
 
 	////////// Member Functions //////////
 };
