@@ -9,9 +9,13 @@
 
 #define WIN32_LEAN_AND_MEAN	// Exclude rarely-used stuff from Windows headers
 
+#include <Dependencies/GLAD/glad.h>
+#include <Dependencies/GLFW/glfw3.h>
+
 #include <iostream>
 #include <string>
 #include <fstream>
+#include <array>
 #include <vector>
 
 #endif //PCH_H
