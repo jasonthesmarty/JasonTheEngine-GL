@@ -3,9 +3,6 @@
 #ifndef JTESHADERS_H
 #define JTESHADERS_H
 
-#include "../Dependencies/GLAD/glad.h"
-#include "../Dependencies/GLFW/glfw3.h"
-
 #include "../Standard/JTEstructs.h"
 
 #include "pch.h"

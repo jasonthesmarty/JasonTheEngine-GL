@@ -1,8 +1,13 @@
 #include "pch.h"
+
 #include "JTEshaders.h"
 #include "../Standard/JTEstandard.h"
 
+// Variables
+
 JTEstandard jstd;
+
+// Definitions
 
 JTEshaders::JTEshaders() {
 	shader.VertShaderSrcSTD = jstd.getFileContents("..\\JasonTheEngine\\JTEengine\\Shaders\\vertex.glsl");
