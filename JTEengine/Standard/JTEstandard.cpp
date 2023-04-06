@@ -1,6 +1,8 @@
 #include "pch.h"
+
 #include "JTEstandard.h"
 
+// Definitions
 
 JTEstandard::JTEstandard() {}
 

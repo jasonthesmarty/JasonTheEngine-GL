@@ -20,18 +20,24 @@ public:
 
 	/*
 	* @brief Prints a value
+	* 
+	* @param data - Prints it
 	*/
 	template<typename Type>
 	void print(Type data);
 
 	/*
 	* @brief Prints a value with a new line
+	* 
+	* @param data - Prints it with newline
 	*/
 	template<typename Type>
 	void println(Type data);
 	
 	/*
 	* @brief Turns a number value into a string
+	* 
+	* @param data - The value being converted
 	* 
 	* @return std::string - From the input data
 	*/
@@ -40,6 +46,8 @@ public:
 
 	/*
 	* @brief Returns the contents of a file in a string
+	* 
+	* @param filename - The file being read and stored
 	* 
 	* @return std::string - Contents of a file
 	*/

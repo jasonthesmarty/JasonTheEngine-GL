@@ -2,6 +2,7 @@
 
 #include "pch.h"
 
+// Definitions
 
 template<typename Type>
 void JTEstandard::print(Type data) {

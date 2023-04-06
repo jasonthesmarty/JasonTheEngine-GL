@@ -3,8 +3,6 @@
 #ifndef JTEINPUT_H
 #define JTEINPUT_H
 
-#include "../Dependencies/GLFW/glfw3.h"
-
 #include "pch.h"
 
 class JTEinput {

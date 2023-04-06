@@ -1,11 +1,15 @@
 #include "pch.h"
+
 #include "JTEinput.h"
 
+// Variables
 
 double mouseX, mouseY;
 
 bool keys[GLFW_KEY_LAST];
 bool buttons[GLFW_MOUSE_BUTTON_LAST];
+
+// Definitions
 
 JTEinput::JTEinput() {}
 
