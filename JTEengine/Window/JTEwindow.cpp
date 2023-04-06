@@ -1,7 +1,9 @@
 #include "pch.h"
+
 #include "JTEwindow.h"
 #include "JTEinput.h"
 
+// Definitions
 
 JTEwindow::JTEwindow(int width, int height, const char* title) {
 	win.width = width;
@@ -35,7 +37,6 @@ void JTEwindow::create() {
 void JTEwindow::update() {
 	glfwPollEvents();
 	glfwSwapBuffers(win.window);
-
 }
 
 void JTEwindow::clearBuffers() {
@@ -78,3 +79,14 @@ void JTEwindow::terminate() {
 	glfwTerminate();
 }
 
+int JTEwindow::getWidth() {
+	return win.width;
+}
+
+int JTEwindow::getHeight() {
+	return win.height;
+}
+
+const char* JTEwindow::getTitle() {
+	return win.title;
+}

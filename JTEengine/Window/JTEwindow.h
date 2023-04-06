@@ -3,9 +3,6 @@
 #ifndef JTEWINDOW_H
 #define JTEWINDOW_H
 
-#include "../Dependencies/GLAD/glad.h"
-#include "../Dependencies/GLFW/glfw3.h"
-
 #include "../Standard/JTEstructs.h"
 
 #include "pch.h"
@@ -93,6 +90,28 @@ public:
 	* @brief Terminates the window and its resources
 	*/
 	void terminate();
+
+
+	/*
+	* @brief Returns the original width of the window
+	* 
+	* @return width - Original width
+	*/
+	int getWidth();
+
+	/*
+	* @brief Returns the original height of the window
+	* 
+	* @return width - Original height
+	*/
+	int getHeight();
+
+	/*
+	* @brief Returns the original title of the window
+	*
+	* @return width - Original title
+	*/
+	const char* getTitle();
 
 	////////// Member Functions //////////
 };
