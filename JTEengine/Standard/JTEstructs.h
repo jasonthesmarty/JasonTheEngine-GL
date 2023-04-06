@@ -6,7 +6,7 @@
 #include "pch.h"
 
 namespace JTEstructs {
-	
+
 	struct Window {
 		int width;
 		int height;
@@ -25,10 +25,24 @@ namespace JTEstructs {
 		GLuint shaderProgram;
 	};
 
+	struct Buffer_Obj {
+		GLuint VAO;
+		GLuint VBO;
+		GLuint IBO;
+		GLuint CBO;
+	};
+
 	struct Polygon_Square {
 		int x;
 		int y;
 		int sideLength;
+	};
+
+	struct RGBA_val {
+		float r;
+		float g; 
+		float b;
+		float a;
 	};
 
 }
