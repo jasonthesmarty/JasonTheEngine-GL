@@ -6,6 +6,7 @@
 #include "../Standard/JTEstructs.h"
 #include "../Window/JTEwindow.h"
 #include "../Standard/JTEstandard.h"
+#include "../Shaders/JTEshaders.h"
 
 #include "pch.h"
 
@@ -21,9 +22,13 @@ namespace JTEpolygon {
 		JTEstructs::RGBA_val colorv3;
 		JTEstructs::RGBA_val colorv4;
 
+		GLuint textureID;
+
 		JTEwindow* window;
+		JTEshaders shaders;
 		int type;
 		int stable_sLength;
+		float multiplier;
 	public:
 		////////// Constructors //////////
 
@@ -35,7 +40,7 @@ namespace JTEpolygon {
 		* @param sideLength - length of the sides
 		* @param window - a reference to the window being drawn on
 		*/
-		JTEsquare(int x, int y, int sideLength, JTEwindow* window);
+		JTEsquare(int x, int y, int sideLength, JTEwindow* window, JTEshaders shaders);
 		
 		/*
 		* @brief Initializes the placement, color (4 ints), and dimensions
@@ -49,7 +54,7 @@ namespace JTEpolygon {
 		* @param alpha - Sets the alpha value (Pixel Values, 0 - 255)
 		* @param window - a reference to the window being drawn on
 		*/
-		JTEsquare(int x, int y, int sideLength, int red, int green, int blue, int alpha, JTEwindow* window);
+		JTEsquare(int x, int y, int sideLength, int red, int green, int blue, int alpha, JTEwindow* window, JTEshaders shaders);
 		
 		/*
 		* @brief Initializes the placement, color (int array), and dimensions
@@ -60,7 +65,7 @@ namespace JTEpolygon {
 		* @param colors - Sets the red, green, blue, and alpha values (Pixel Values, 0 - 255)
 		* @param window - a reference to the window being drawn on
 		*/
-		JTEsquare(int x, int y, int sideLength, int color[4], JTEwindow* window);
+		JTEsquare(int x, int y, int sideLength, int color[4], JTEwindow* window, JTEshaders shaders);
 
 		/*
 		* @brief Initializes the placement, color (int array), and dimensions
@@ -74,7 +79,7 @@ namespace JTEpolygon {
 		* @param colors_tr - Sets the red, green, blue, and alpha values of the bottom-right vertex (Pixel Values, 0 - 255)
 		* @param window - a reference to the window being drawn on
 		*/
-		JTEsquare(int x, int y, int sideLength, int color_tl[4], int color_tr[4], int color_bl[4], int color_br[4], JTEwindow* window);
+		JTEsquare(int x, int y, int sideLength, int color_tl[4], int color_tr[4], int color_bl[4], int color_br[4], JTEwindow* window, JTEshaders shaders);
 
 		////////// Constructors //////////
 
@@ -103,12 +108,40 @@ namespace JTEpolygon {
 		/*
 		* @brief Sets the side length of the square
 		*/
-		void setLength(int length);
+		void setSideLength(int length);
+
+
+		/*
+		* @brief Gets the x coordinate of the square
+		* 
+		* @return x - The x coordinate
+		*/
+		int getX();
+
+		/*
+		* @brief Gets the y coordinate of the square
+		* 
+		* @return y - The y coordinate
+		*/
+		int getY();
+
+		/*
+		* @brief Gets the side length of the square
+		*/
+		int getSideLength();
+
 
 		/*
 		* @brief Sets the dilation multiplier of the square
 		*/
 		void dilate(float multiplier);
+
+		/*
+		* @brief Gets the dilation multiplier of the square
+		* 
+		* @return multiplier - The dilation multiplier
+		*/
+		float getDilation();
 
 		////////// Member Functions //////////
 	};

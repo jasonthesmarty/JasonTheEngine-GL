@@ -12,7 +12,7 @@ namespace JTEpolygon {
 	
 	// SQUARE //
 
-	JTEsquare::JTEsquare(int x, int y, int sideLength, JTEwindow* window) {
+	JTEsquare::JTEsquare(int x, int y, int sideLength, JTEwindow* window, JTEshaders shaders) {
 		p_sq.x = x;
 		p_sq.y = y;
 		p_sq.sideLength = sideLength;
@@ -20,6 +20,7 @@ namespace JTEpolygon {
 		this->stable_sLength = sideLength;
 
 		this->window = window;
+		this->shaders = shaders;
 		this->type = 0;
 
 		/// To ward off C26495 
@@ -31,7 +32,7 @@ namespace JTEpolygon {
 		buf.VAO, buf.VBO, buf.IBO, buf.CBO = 0;
 	}
 
-	JTEsquare::JTEsquare(int x, int y, int sideLength, int red, int green, int blue, int alpha, JTEwindow* window) {
+	JTEsquare::JTEsquare(int x, int y, int sideLength, int red, int green, int blue, int alpha, JTEwindow* window, JTEshaders shaders) {
 		p_sq.x = x;
 		p_sq.y = y;
 		p_sq.sideLength = sideLength;
@@ -44,6 +45,7 @@ namespace JTEpolygon {
 		colorv.a = (float)alpha / 255;
 		
 		this->window = window;
+		this->shaders = shaders;
 		this->type = 1;
 
 		/// To ward off C26495
@@ -55,7 +57,7 @@ namespace JTEpolygon {
 		buf.VAO, buf.VBO, buf.IBO, buf.CBO = 0;
 	}
 
-	JTEsquare::JTEsquare(int x, int y, int sideLength, int color[4], JTEwindow* window) {
+	JTEsquare::JTEsquare(int x, int y, int sideLength, int color[4], JTEwindow* window, JTEshaders shaders) {
 		p_sq.x = x;
 		p_sq.y = y;
 		p_sq.sideLength = sideLength;
@@ -68,6 +70,7 @@ namespace JTEpolygon {
 		colorv.a = (float)color[3] / 255;
 
 		this->window = window;
+		this->shaders = shaders;
 		this->type = 2;
 
 		/// To ward off C26495
@@ -79,7 +82,7 @@ namespace JTEpolygon {
 		buf.VAO, buf.VBO, buf.IBO, buf.CBO = 0;
 	}
 
-	JTEsquare::JTEsquare(int x, int y, int sideLength, int color_tl[4], int color_tr[4], int color_bl[4], int color_br[4], JTEwindow* window) {
+	JTEsquare::JTEsquare(int x, int y, int sideLength, int color_tl[4], int color_tr[4], int color_bl[4], int color_br[4], JTEwindow* window, JTEshaders shaders) {
 		p_sq.x = x;
 		p_sq.y = y;
 		p_sq.sideLength = sideLength;
@@ -107,6 +110,7 @@ namespace JTEpolygon {
 		colorv4.a = (float)color_br[3] / 255;
 
 		this->window = window;
+		this->shaders = shaders;
 		this->type = 3;
 
 		/// To ward off C26495
@@ -154,13 +158,25 @@ namespace JTEpolygon {
 			glGenBuffers(1, &buf.IBO);
 			glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, buf.IBO);
 			glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
-			glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
+			glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * 0, (void*)0);
 
 			// CBO
 			glGenBuffers(1, &buf.CBO);
 			glBindBuffer(GL_ARRAY_BUFFER, buf.CBO);
 			glBufferData(GL_ARRAY_BUFFER, sizeof(color), color, GL_STATIC_DRAW);
-			glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
+			glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 0, (void*)0);
+
+			// Single White Pixel 
+			glGenTextures(1, &textureID);
+			glActiveTexture(GL_TEXTURE0);
+			glBindTexture(GL_TEXTURE_2D, textureID);
+			GLubyte buffer[] = { 255, 255, 255, 255 };
+			glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, 1, 1, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
+
+			glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, 1, 1, GL_RGBA, GL_UNSIGNED_BYTE, buffer);
+
+			int textureUniformId = glGetUniformLocation(shaders.getShader(), "texture0");
+			glUniform1i(textureUniformId, 0);
 
 			// Drawing
 			glEnableVertexAttribArray(0);
@@ -207,13 +223,25 @@ namespace JTEpolygon {
 			glGenBuffers(1, &buf.IBO);
 			glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, buf.IBO);
 			glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
-			glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
+			glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, (void*)0);
 
 			// CBO
 			glGenBuffers(1, &buf.CBO);
 			glBindBuffer(GL_ARRAY_BUFFER, buf.CBO);
 			glBufferData(GL_ARRAY_BUFFER, sizeof(color), color, GL_STATIC_DRAW);
-			glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
+			glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 0, (void*)0);
+
+			// Single White Pixel
+			glGenTextures(1, &textureID);
+			glActiveTexture(GL_TEXTURE0);
+			glBindTexture(GL_TEXTURE_2D, textureID);
+			GLubyte buffer[] = { 255, 255, 255, 255 };
+			glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, 1, 1, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
+
+			glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, 1, 1, GL_RGBA, GL_UNSIGNED_BYTE, buffer);
+
+			int textureUniformId = glGetUniformLocation(shaders.getShader(), "texture0");
+			glUniform1i(textureUniformId, 0);
 
 			// Drawing
 			glEnableVertexAttribArray(0);
@@ -260,13 +288,25 @@ namespace JTEpolygon {
 			glGenBuffers(1, &buf.IBO);
 			glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, buf.IBO);
 			glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
-			glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
+			glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, (void*)0);
 
 			// CBO
 			glGenBuffers(1, &buf.CBO);
 			glBindBuffer(GL_ARRAY_BUFFER, buf.CBO);
 			glBufferData(GL_ARRAY_BUFFER, sizeof(color), color, GL_STATIC_DRAW);
-			glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
+			glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 0, (void*)0);
+
+			// Single White Pixel 
+			glGenTextures(1, &textureID);
+			glActiveTexture(GL_TEXTURE0);
+			glBindTexture(GL_TEXTURE_2D, textureID);
+			GLubyte buffer[] = { 255, 255, 255, 255 };
+			glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, 1, 1, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
+
+			glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, 1, 1, GL_RGBA, GL_UNSIGNED_BYTE, buffer);
+
+			int textureUniformId = glGetUniformLocation(shaders.getShader(), "texture0");
+			glUniform1i(textureUniformId, 0);
 
 			// Drawing
 			glEnableVertexAttribArray(0);
@@ -283,6 +323,7 @@ namespace JTEpolygon {
 		glDeleteBuffers(1, &buf.VBO);
 		glDeleteBuffers(1, &buf.IBO);
 		glDeleteBuffers(1, &buf.CBO);
+		glDeleteTextures(1, &textureID);
 
 		glDisableVertexAttribArray(0);
 		glDisableVertexAttribArray(1);
@@ -296,13 +337,30 @@ namespace JTEpolygon {
 		p_sq.y = y;
 	}
 
-	void JTEsquare::setLength(int length) {
+	void JTEsquare::setSideLength(int length) {
 		p_sq.sideLength = length;
+		this->stable_sLength = length;
+	}
+
+	int JTEsquare::getX() {
+		return p_sq.x;
+	}
+
+	int JTEsquare::getY() {
+		return p_sq.y;
+	}
+	
+	int JTEsquare::getSideLength() {
+		return p_sq.sideLength;
 	}
 
 	void JTEsquare::dilate(float multiplier) {
-		p_sq.sideLength = this->stable_sLength * multiplier;
-		//jstdp.println(p_sq.sideLength);
+		this->multiplier = multiplier;
+		p_sq.sideLength = (int)((float)this->stable_sLength * multiplier);
+	}
+
+	float JTEsquare::getDilation() {
+		return this->multiplier;
 	}
 
 	// SQUARE //
