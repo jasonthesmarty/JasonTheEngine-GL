@@ -30,6 +30,7 @@ namespace JTEstructs {
 		GLuint VBO;
 		GLuint IBO;
 		GLuint CBO;
+		GLuint IMGBO;
 	};
 
 	struct Polygon_Square {
@@ -38,11 +39,31 @@ namespace JTEstructs {
 		int sideLength;
 	};
 
+	struct Image {
+		int stb_width;
+		int stb_height;
+		int stb_channels;
+		
+		float w_multiplier;
+		float h_multiplier;
+
+		int x;
+		int y;
+		int width;
+		int height;
+		const char* filename;
+	};
+
 	struct RGBA_val {
 		float r;
 		float g; 
 		float b;
 		float a;
+	};
+
+	struct OriginalDimensions {
+		int oWidth;
+		int oHeight;
 	};
 
 }
