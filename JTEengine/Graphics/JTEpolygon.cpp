@@ -2,6 +2,12 @@
 
 #include "JTEpolygon.h"
 
+// Variables
+
+JTEstandard jstdp = JTEstandard();
+
+// Definitions
+
 namespace JTEpolygon {
 	
 	// SQUARE //
@@ -11,12 +17,17 @@ namespace JTEpolygon {
 		p_sq.y = y;
 		p_sq.sideLength = sideLength;
 		
+		this->stable_sLength = sideLength;
+
 		this->window = window;
 		this->type = 0;
 
 		/// To ward off C26495 
 
 		colorv.r, colorv.g, colorv.b, colorv.a = 0;
+		colorv2.r, colorv2.g, colorv2.b, colorv2.a = 0;
+		colorv3.r, colorv3.g, colorv3.b, colorv3.a = 0;
+		colorv4.r, colorv4.g, colorv4.b, colorv4.a = 0;
 		buf.VAO, buf.VBO, buf.IBO, buf.CBO = 0;
 	}
 
@@ -25,6 +36,8 @@ namespace JTEpolygon {
 		p_sq.y = y;
 		p_sq.sideLength = sideLength;
 		
+		this->stable_sLength = sideLength;
+
 		colorv.r = (float)red / 255;
 		colorv.g = (float)green / 255;
 		colorv.b = (float)blue / 255;
@@ -35,6 +48,10 @@ namespace JTEpolygon {
 
 		/// To ward off C26495
 
+		colorv2.r, colorv2.g, colorv2.b, colorv2.a = 0;
+		colorv3.r, colorv3.g, colorv3.b, colorv3.a = 0;
+		colorv4.r, colorv4.g, colorv4.b, colorv4.a = 0;
+
 		buf.VAO, buf.VBO, buf.IBO, buf.CBO = 0;
 	}
 
@@ -42,6 +59,8 @@ namespace JTEpolygon {
 		p_sq.x = x;
 		p_sq.y = y;
 		p_sq.sideLength = sideLength;
+
+		this->stable_sLength = sideLength;
 
 		colorv.r = (float)color[0] / 255;
 		colorv.g = (float)color[1] / 255;
@@ -51,7 +70,46 @@ namespace JTEpolygon {
 		this->window = window;
 		this->type = 2;
 
-		///
+		/// To ward off C26495
+
+		colorv2.r, colorv2.g, colorv2.b, colorv2.a = 0;
+		colorv3.r, colorv3.g, colorv3.b, colorv3.a = 0;
+		colorv4.r, colorv4.g, colorv4.b, colorv4.a = 0;
+
+		buf.VAO, buf.VBO, buf.IBO, buf.CBO = 0;
+	}
+
+	JTEsquare::JTEsquare(int x, int y, int sideLength, int color_tl[4], int color_tr[4], int color_bl[4], int color_br[4], JTEwindow* window) {
+		p_sq.x = x;
+		p_sq.y = y;
+		p_sq.sideLength = sideLength;
+
+		this->stable_sLength = sideLength;
+
+		colorv.r = (float)color_tl[0] / 255;
+		colorv.g = (float)color_tl[1] / 255;
+		colorv.b = (float)color_tl[2] / 255;
+		colorv.a = (float)color_tl[3] / 255;
+
+		colorv2.r = (float)color_tr[0] / 255;
+		colorv2.g = (float)color_tr[1] / 255;
+		colorv2.b = (float)color_tr[2] / 255;
+		colorv2.a = (float)color_tr[3] / 255;
+
+		colorv3.r = (float)color_bl[0] / 255;
+		colorv3.g = (float)color_bl[1] / 255;
+		colorv3.b = (float)color_bl[2] / 255;
+		colorv3.a = (float)color_bl[3] / 255;
+
+		colorv4.r = (float)color_br[0] / 255;
+		colorv4.g = (float)color_br[1] / 255;
+		colorv4.b = (float)color_br[2] / 255;
+		colorv4.a = (float)color_br[3] / 255;
+
+		this->window = window;
+		this->type = 3;
+
+		/// To ward off C26495
 
 		buf.VAO, buf.VBO, buf.IBO, buf.CBO = 0;
 	}
@@ -110,7 +168,7 @@ namespace JTEpolygon {
 			glDrawElements(GL_TRIANGLES, sizeof(indices) / sizeof(int), GL_UNSIGNED_INT, 0);
 			glBindVertexArray(0);
 		}
-		else if (this->type == 1) {
+		else if (this->type == 1 || this->type == 2) {
 			float widthHalf = (float)this->window->getWidth() / 2;
 			float heightHalf = (float)this->window->getHeight() / 2;
 
@@ -163,7 +221,7 @@ namespace JTEpolygon {
 			glDrawElements(GL_TRIANGLES, sizeof(indices) / sizeof(int), GL_UNSIGNED_INT, 0);
 			glBindVertexArray(0);
 		}
-		else if (this->type == 2) {
+		else if (this->type == 3) {
 			float widthHalf = (float)this->window->getWidth() / 2;
 			float heightHalf = (float)this->window->getHeight() / 2;
 
@@ -184,11 +242,11 @@ namespace JTEpolygon {
 			};
 			float color[] = {
 				colorv.r, colorv.g, colorv.b,
-				colorv.r, colorv.g, colorv.b,
-				colorv.r, colorv.g, colorv.b,
-				colorv.r, colorv.g, colorv.b
+				colorv2.r, colorv2.g, colorv2.b,
+				colorv3.r, colorv3.g, colorv3.b,
+				colorv4.r, colorv4.g, colorv4.b
 			};
-		
+
 			// VAO
 			glGenVertexArrays(1, &buf.VAO);
 			glBindVertexArray(buf.VAO);
@@ -236,6 +294,15 @@ namespace JTEpolygon {
 
 	void JTEsquare::setY(int y) {
 		p_sq.y = y;
+	}
+
+	void JTEsquare::setLength(int length) {
+		p_sq.sideLength = length;
+	}
+
+	void JTEsquare::dilate(float multiplier) {
+		p_sq.sideLength = this->stable_sLength * multiplier;
+		//jstdp.println(p_sq.sideLength);
 	}
 
 	// SQUARE //
