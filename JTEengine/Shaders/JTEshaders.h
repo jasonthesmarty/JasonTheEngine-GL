@@ -48,6 +48,13 @@ public:
 	*/
 	void terminate();
 
+	/*
+	* @brief Gets the shader program, can only be ran after create() was called
+	* 
+	* @return shaderProgram - The compiled program that includes the vertex and fragment shaders
+	*/
+	unsigned int getShader();
+
 	////////// Member Functions //////////
 };
 

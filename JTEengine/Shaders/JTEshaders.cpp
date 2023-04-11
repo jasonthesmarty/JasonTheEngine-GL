@@ -20,12 +20,15 @@ JTEshaders::JTEshaders() {
 
 	layout (location = 0) in vec3 position;
 	layout (location = 1) in vec3 color;
+	layout (location = 2) in vec2 texture;
 
 	out vec3 VertColor;
+	out vec2 textureOut;
 
 	void main() {
 		gl_Position = vec4(position, 1.0);
 		VertColor = color;
+		textureOut = texture;
 	}
 	)";
 	shader.FragShaderSrcCC = 
@@ -33,11 +36,15 @@ JTEshaders::JTEshaders() {
 	#version 460
 
 	in vec3 VertColor;
+	in vec2 textureOut;
+
+	uniform sampler2D texture0;
 
 	out vec4 FragColor;
 
 	void main() {
-		FragColor = vec4(VertColor, 1.0);
+		FragColor = texture(texture0, textureOut) * (vec4(VertColor, 1.0));
+		// FragColor = (vec4(VertColor, 1.0));
 	}
 	)";
 	
@@ -81,4 +88,9 @@ void JTEshaders::stop() {
 
 void JTEshaders::terminate() {
 	glDeleteProgram(shader.shaderProgram);
+}
+
+unsigned int JTEshaders::getShader()
+{
+	return shader.shaderProgram;
 }
