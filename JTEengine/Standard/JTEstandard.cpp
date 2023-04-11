@@ -6,8 +6,7 @@
 
 JTEstandard::JTEstandard() {}
 
-std::string JTEstandard::getFileContents(const char* filename)
-{
+std::string JTEstandard::getFileContents(const char* filename) {
 	std::ifstream file;
 	std::string contents = "";
 	std::string line = "";
