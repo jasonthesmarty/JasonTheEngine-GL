@@ -4,4 +4,5 @@
 #include "Window/JTEinput.h"
 #include "Shaders/JTEshaders.h"
 #include "Graphics/JTEpolygon.h"
+#include "Graphics/JTEimage.h"
 #include "Standard/JTEstandard.h"
