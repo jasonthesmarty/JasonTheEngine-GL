@@ -37,6 +37,10 @@ void JTEwindow::create() {
 void JTEwindow::update() {
 	glfwPollEvents();
 	glfwSwapBuffers(win.window);
+
+	int width, height;
+	glfwGetWindowSize(win.window, &width, &height);
+	glViewport(0, 0, width, height);
 }
 
 void JTEwindow::clearBuffers() {
@@ -90,3 +94,4 @@ int JTEwindow::getHeight() {
 const char* JTEwindow::getTitle() {
 	return win.title;
 }
+

@@ -102,14 +102,14 @@ public:
 	/*
 	* @brief Returns the original height of the window
 	* 
-	* @return width - Original height
+	* @return height - Original height
 	*/
 	int getHeight();
 
 	/*
 	* @brief Returns the original title of the window
 	*
-	* @return width - Original title
+	* @return title - Original title
 	*/
 	const char* getTitle();
 
