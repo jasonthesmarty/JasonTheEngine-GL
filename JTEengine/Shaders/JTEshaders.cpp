@@ -10,14 +10,39 @@ JTEstandard jstd;
 // Definitions
 
 JTEshaders::JTEshaders() {
-	shader.VertShaderSrcSTD = jstd.getFileContents("..\\JasonTheEngine\\JTEengine\\Shaders\\vertex.glsl");
-	shader.FragShaderSrcSTD = jstd.getFileContents("..\\JasonTheEngine\\JTEengine\\Shaders\\fragment.glsl");
+	shader.VertShaderSrcSTD = "";
+	shader.FragShaderSrcSTD = "";
+
+
+	shader.VertShaderSrcCC = 
+	R"(
+	#version 460
+
+	layout (location = 0) in vec3 position;
+	layout (location = 1) in vec3 color;
+
+	out vec3 VertColor;
+
+	void main() {
+		gl_Position = vec4(position, 1.0);
+		VertColor = color;
+	}
+	)";
+	shader.FragShaderSrcCC = 
+	R"(
+	#version 460
+
+	in vec3 VertColor;
+
+	out vec4 FragColor;
+
+	void main() {
+		FragColor = vec4(VertColor, 1.0);
+	}
+	)";
 	
-	shader.VertShaderSrcCC = shader.VertShaderSrcSTD.c_str();
-	shader.FragShaderSrcCC = shader.FragShaderSrcSTD.c_str();
-	
-	// jstd.println(vertexShaderSource);
-	// jstd.println(fragmentShaderSource);
+	//jstd.println(shader.VertShaderSrcSTD);
+	//jstd.println(shader.FragShaderSrcSTD);
 }
 
 JTEshaders::JTEshaders(std::string vertexShaderSourceFile, std::string fragmentShaderSourceFile) {
