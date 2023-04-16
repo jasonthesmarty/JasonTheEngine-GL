@@ -4,12 +4,18 @@
 #define JTEWINDOW_H
 
 #include "../Standard/JTEstructs.h"
+#include "../Standard/JTEstandard.h"
 
 #include "pch.h"
 
 class JTEwindow {
 private:
 	JTEstructs::Window win;
+
+	JTEstandard jstdw;
+
+	double seconds = glfwGetTime();
+	int frames;
 
 public:
 	////////// Constructor //////////
@@ -112,6 +118,20 @@ public:
 	* @return title - Original title
 	*/
 	const char* getTitle();
+
+	/*
+	* @brief Frames per second of the window
+	*
+	* @param *fps - The frames per second
+	*/
+	void clock(float* fps);
+
+	/*
+	* @brief Memory usage of the application (using windows.h)
+	*
+	* @param *memUse - Memory usage
+	*/
+	void memUsage(long int* memUse);
 
 	////////// Member Functions //////////
 };

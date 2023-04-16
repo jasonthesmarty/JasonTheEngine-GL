@@ -9,6 +9,8 @@ JTEwindow::JTEwindow(int width, int height, const char* title) {
 	win.width = width;
 	win.height = height;
 	win.title = title;
+
+	this->frames = 0;
 }
 
 void JTEwindow::create() {
@@ -95,3 +97,21 @@ const char* JTEwindow::getTitle() {
 	return win.title;
 }
 
+void JTEwindow::clock(float* fps) {
+	frames++;
+	if (glfwGetTime() >= seconds + 1) {
+		*fps = frames;
+		seconds = glfwGetTime();
+		frames = 0;
+		
+	}
+}
+
+void JTEwindow::memUsage(long int* memUse) {
+	HANDLE process = GetCurrentProcess();
+	PROCESS_MEMORY_COUNTERS_EX memory;
+
+	GetProcessMemoryInfo(process, reinterpret_cast<PROCESS_MEMORY_COUNTERS*>(&memory), sizeof(memory));
+
+	*memUse = memory.WorkingSetSize;
+}
