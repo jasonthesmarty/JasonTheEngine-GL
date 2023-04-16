@@ -37,7 +37,7 @@ public:
 	* @brief Starts using the shader program
 	*/
 	void start();
-	
+
 	/*
 	* @brief Stops using the shader program
 	*/
