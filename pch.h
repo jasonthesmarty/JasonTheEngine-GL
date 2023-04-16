@@ -11,11 +11,17 @@
 
 #include <Dependencies/GLAD/glad.h>
 #include <Dependencies/GLFW/glfw3.h>
+#include <Dependencies/GLM/glm.hpp>
 
 #include <iostream>
 #include <string>
 #include <fstream>
 #include <array>
 #include <vector>
+#include <memory>
+#include <map>
+
+#include <windows.h>
+#include <psapi.h>
 
 #endif //PCH_H
