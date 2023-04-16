@@ -18,7 +18,7 @@ private:
 	JTEshaders shaders;
 	JTEwindow* window;
 
-	float calculatedWidth, calculatedHeight;
+	float WIDTH, HEIGHT;
 	int originalWidth, originalHeight;
 	int type;
 

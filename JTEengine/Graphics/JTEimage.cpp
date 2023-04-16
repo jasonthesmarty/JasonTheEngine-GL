@@ -55,36 +55,32 @@ void JTEimage::render() {
 	float Y = (1 - (img.y / heightHalf));
 
 	if (this->type == 0) {
-		calculatedWidth = (img.stb_width / widthHalf);
-		calculatedHeight = (img.stb_height / heightHalf);
+		WIDTH = (img.stb_width / widthHalf);
+		HEIGHT = (img.stb_height / heightHalf);
 		img.width = img.stb_width;
 		img.height = img.stb_height;
 	} 
 	else if (this->type == 1) {
-		calculatedWidth = (img.width / widthHalf);
-		calculatedHeight = (img.height / heightHalf);
+		WIDTH = (img.width / widthHalf);
+		HEIGHT = (img.height / heightHalf);
 	}
 
-	float vertices[] = {
-		X, Y, 0.0f,
-		X + calculatedWidth, Y, 0.0f,
-		X + calculatedWidth, Y - calculatedHeight, 0.0f,
-		X, Y - calculatedHeight, 0.0f
-	};
-	int indices[] = {
-		3, 1, 2, 1, 0, 3
+	float vertices[6][4] = {
+		// Vertex Coords        // Texture Coords
+		{X, Y - HEIGHT,            0.0f, 1.0f},
+		{X + WIDTH, Y,             1.0f, 0.0f},
+		{X + WIDTH, Y - HEIGHT,    1.0f, 1.0f},
+		{X, Y - HEIGHT,            0.0f, 1.0f},
+		{X + WIDTH, Y,             1.0f, 0.0f},
+		{X, Y,                     0.0f, 0.0f}
 	};
 	float colors[] = {
 		1.0f, 1.0f, 1.0f,
 		1.0f, 1.0f, 1.0f,
 		1.0f, 1.0f, 1.0f,
+		1.0f, 1.0f, 1.0f,
+		1.0f, 1.0f, 1.0f,
 		1.0f, 1.0f, 1.0f
-	};
-	float texture[] = {
-		0.0f, 0.0f,
-		1.0f, 0.0f, 
-		1.0f, 1.0f, 
-		0.0f, 1.0f
 	};
 
 	// VAO
@@ -95,24 +91,13 @@ void JTEimage::render() {
 	glGenBuffers(1, &buf.VBO);
 	glBindBuffer(GL_ARRAY_BUFFER, buf.VBO);
 	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
-
-	// IBO
-	glGenBuffers(1, &buf.IBO);
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, buf.IBO);
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, (void*)0);
+	glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*)0);
 
 	// CBO
 	glGenBuffers(1, &buf.CBO);
 	glBindBuffer(GL_ARRAY_BUFFER, buf.CBO);
 	glBufferData(GL_ARRAY_BUFFER, sizeof(colors), colors, GL_STATIC_DRAW);
 	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 0, (void*)0);
-
-	// IMGBO
-	glGenBuffers(1, &buf.IMGBO);
-	glBindBuffer(GL_ARRAY_BUFFER, buf.IMGBO);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(texture), texture, GL_STATIC_DRAW);
-	glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 0, (void*)0);
 
 	// Transparency
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
@@ -125,9 +110,7 @@ void JTEimage::render() {
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, textureID);
 
-	glEnableVertexAttribArray(2);
-	glDrawElements(GL_TRIANGLES, sizeof(indices) / sizeof(int), GL_UNSIGNED_INT, 0);
-	glBindVertexArray(0);
+	glDrawArrays(GL_TRIANGLES, 0, 6);
 }
 
 void JTEimage::erase() {
@@ -136,9 +119,7 @@ void JTEimage::erase() {
 
 	glDeleteVertexArrays(1, &buf.VAO);
 	glDeleteBuffers(1, &buf.VBO);
-	glDeleteBuffers(1, &buf.IBO);
 	glDeleteBuffers(1, &buf.CBO);
-	glDeleteBuffers(1, &buf.IMGBO);
 	glDeleteTextures(1, &textureID);
 
 	glDisableVertexAttribArray(0);

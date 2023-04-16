@@ -39,6 +39,7 @@ namespace JTEpolygon {
 		* @param y - y coordinate of the top-left vertex
 		* @param sideLength - length of the sides
 		* @param window - a reference to the window being drawn on
+		* @param shaders - The shader program being used
 		*/
 		JTEsquare(int x, int y, int sideLength, JTEwindow* window, JTEshaders shaders);
 		
@@ -53,6 +54,7 @@ namespace JTEpolygon {
 		* @param blue - Sets the blue value (Pixel Values, 0 - 255)
 		* @param alpha - Sets the alpha value (Pixel Values, 0 - 255)
 		* @param window - a reference to the window being drawn on
+		* @param shaders - The shader program being used
 		*/
 		JTEsquare(int x, int y, int sideLength, int red, int green, int blue, int alpha, JTEwindow* window, JTEshaders shaders);
 		
@@ -64,6 +66,7 @@ namespace JTEpolygon {
 		* @param sideLength - length of the sides
 		* @param colors - Sets the red, green, blue, and alpha values (Pixel Values, 0 - 255)
 		* @param window - a reference to the window being drawn on
+		* @param shaders - The shader program being used
 		*/
 		JTEsquare(int x, int y, int sideLength, int color[4], JTEwindow* window, JTEshaders shaders);
 
@@ -78,6 +81,7 @@ namespace JTEpolygon {
 		* @param colors_bl - Sets the red, green, blue, and alpha values of the bottom-left vertex (Pixel Values, 0 - 255)
 		* @param colors_tr - Sets the red, green, blue, and alpha values of the bottom-right vertex (Pixel Values, 0 - 255)
 		* @param window - a reference to the window being drawn on
+		* @param shaders - The shader program being used
 		*/
 		JTEsquare(int x, int y, int sideLength, int color_tl[4], int color_tr[4], int color_bl[4], int color_br[4], JTEwindow* window, JTEshaders shaders);
 

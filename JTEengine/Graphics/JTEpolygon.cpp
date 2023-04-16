@@ -29,7 +29,7 @@ namespace JTEpolygon {
 		colorv2.r, colorv2.g, colorv2.b, colorv2.a = 0;
 		colorv3.r, colorv3.g, colorv3.b, colorv3.a = 0;
 		colorv4.r, colorv4.g, colorv4.b, colorv4.a = 0;
-		buf.VAO, buf.VBO, buf.IBO, buf.CBO = 0;
+		buf.VAO, buf.VBO, buf.CBO = 0;
 	}
 
 	JTEsquare::JTEsquare(int x, int y, int sideLength, int red, int green, int blue, int alpha, JTEwindow* window, JTEshaders shaders) {
@@ -54,7 +54,7 @@ namespace JTEpolygon {
 		colorv3.r, colorv3.g, colorv3.b, colorv3.a = 0;
 		colorv4.r, colorv4.g, colorv4.b, colorv4.a = 0;
 
-		buf.VAO, buf.VBO, buf.IBO, buf.CBO = 0;
+		buf.VAO, buf.VBO, buf.CBO = 0;
 	}
 
 	JTEsquare::JTEsquare(int x, int y, int sideLength, int color[4], JTEwindow* window, JTEshaders shaders) {
@@ -79,7 +79,7 @@ namespace JTEpolygon {
 		colorv3.r, colorv3.g, colorv3.b, colorv3.a = 0;
 		colorv4.r, colorv4.g, colorv4.b, colorv4.a = 0;
 
-		buf.VAO, buf.VBO, buf.IBO, buf.CBO = 0;
+		buf.VAO, buf.VBO, buf.CBO = 0;
 	}
 
 	JTEsquare::JTEsquare(int x, int y, int sideLength, int color_tl[4], int color_tr[4], int color_bl[4], int color_br[4], JTEwindow* window, JTEshaders shaders) {
@@ -115,7 +115,7 @@ namespace JTEpolygon {
 
 		/// To ward off C26495
 
-		buf.VAO, buf.VBO, buf.IBO, buf.CBO = 0;
+		buf.VAO, buf.VBO, buf.CBO = 0;
 	}
 
 	void JTEsquare::render() {
@@ -129,17 +129,19 @@ namespace JTEpolygon {
 			float WIDTH = (p_sq.sideLength / widthHalf);
 			float HEIGHT = (p_sq.sideLength / heightHalf);
 
-			float vertices[] = {
-				X, Y, 0.0f,
-				X + WIDTH, Y, 0.0f,
-				X + WIDTH, Y - HEIGHT, 0.0f,
-				X, Y - HEIGHT, 0.0f
-			};
-			int indices[] = {
-				3, 1, 2, 1, 0, 3
+			float vertices[6][4] = {
+				// Vertex Coords        // Texture Coords
+				{X, Y - HEIGHT,            0.0f, 1.0f},
+				{X + WIDTH, Y,             1.0f, 0.0f},
+				{X + WIDTH, Y - HEIGHT,    1.0f, 1.0f},
+				{X, Y - HEIGHT,            0.0f, 1.0f},
+				{X + WIDTH, Y,             1.0f, 0.0f},
+				{X, Y,                     0.0f, 0.0f}
 			};
 			float color[] = {
 				0.5f, 1.0f, 1.0f,
+				1.0f, 1.0f, 0.5f,
+				1.0f, 0.5f, 1.0f,
 				1.0f, 1.0f, 0.5f,
 				1.0f, 0.5f, 1.0f,
 				1.0f, 1.0f, 0.5f
@@ -153,12 +155,7 @@ namespace JTEpolygon {
 			glGenBuffers(1, &buf.VBO);
 			glBindBuffer(GL_ARRAY_BUFFER, buf.VBO);
 			glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
-
-			// IBO
-			glGenBuffers(1, &buf.IBO);
-			glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, buf.IBO);
-			glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
-			glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * 0, (void*)0);
+			glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*)0);
 
 			// CBO
 			glGenBuffers(1, &buf.CBO);
@@ -181,8 +178,7 @@ namespace JTEpolygon {
 			// Drawing
 			glEnableVertexAttribArray(0);
 			glEnableVertexAttribArray(1);
-			glDrawElements(GL_TRIANGLES, sizeof(indices) / sizeof(int), GL_UNSIGNED_INT, 0);
-			glBindVertexArray(0);
+			glDrawArrays(GL_TRIANGLES, 0, 6);
 		}
 		else if (this->type == 1 || this->type == 2) {
 			float widthHalf = (float)this->window->getWidth() / 2;
@@ -194,16 +190,18 @@ namespace JTEpolygon {
 			float WIDTH = (p_sq.sideLength / widthHalf);
 			float HEIGHT = (p_sq.sideLength / heightHalf);
 
-			float vertices[] = {
-				X, Y, 0.0f,
-				X + WIDTH, Y, 0.0f,
-				X + WIDTH, Y - HEIGHT, 0.0f,
-				X, Y - HEIGHT, 0.0f
-			};
-			int indices[] = {
-				3, 1, 2, 1, 0, 3
+			float vertices[6][4] = {
+				// Vertex Coords        // Texture Coords
+				{X, Y - HEIGHT,            0.0f, 1.0f},
+				{X + WIDTH, Y,             1.0f, 0.0f},
+				{X + WIDTH, Y - HEIGHT,    1.0f, 1.0f},
+				{X, Y - HEIGHT,            0.0f, 1.0f},
+				{X + WIDTH, Y,             1.0f, 0.0f},
+				{X, Y,                     0.0f, 0.0f}
 			};
 			float color[] = {
+				colorv.r, colorv.g, colorv.b,
+				colorv.r, colorv.g, colorv.b,
 				colorv.r, colorv.g, colorv.b,
 				colorv.r, colorv.g, colorv.b,
 				colorv.r, colorv.g, colorv.b,
@@ -218,12 +216,7 @@ namespace JTEpolygon {
 			glGenBuffers(1, &buf.VBO);
 			glBindBuffer(GL_ARRAY_BUFFER, buf.VBO);
 			glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
-
-			// IBO
-			glGenBuffers(1, &buf.IBO);
-			glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, buf.IBO);
-			glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
-			glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, (void*)0);
+			glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*)0);
 
 			// CBO
 			glGenBuffers(1, &buf.CBO);
@@ -246,8 +239,7 @@ namespace JTEpolygon {
 			// Drawing
 			glEnableVertexAttribArray(0);
 			glEnableVertexAttribArray(1);
-			glDrawElements(GL_TRIANGLES, sizeof(indices) / sizeof(int), GL_UNSIGNED_INT, 0);
-			glBindVertexArray(0);
+			glDrawArrays(GL_TRIANGLES, 0, 6);
 		}
 		else if (this->type == 3) {
 			float widthHalf = (float)this->window->getWidth() / 2;
@@ -259,20 +251,22 @@ namespace JTEpolygon {
 			float WIDTH = (p_sq.sideLength / widthHalf);
 			float HEIGHT = (p_sq.sideLength / heightHalf);
 
-			float vertices[] = {
-				X, Y, 0.0f,
-				X + WIDTH, Y, 0.0f,
-				X + WIDTH, Y - HEIGHT, 0.0f,
-				X, Y - HEIGHT, 0.0f
-			};
-			int indices[] = {
-				3, 1, 2, 1, 0, 3
+			float vertices[6][4] = {
+				// Vertex Coords        // Texture Coords
+				{X, Y - HEIGHT,            0.0f, 1.0f},
+				{X + WIDTH, Y,             1.0f, 0.0f},
+				{X + WIDTH, Y - HEIGHT,    1.0f, 1.0f},
+				{X, Y - HEIGHT,            0.0f, 1.0f},
+				{X + WIDTH, Y,             1.0f, 0.0f},
+				{X, Y,                     0.0f, 0.0f}
 			};
 			float color[] = {
-				colorv.r, colorv.g, colorv.b,
+				colorv4.r, colorv4.g, colorv4.b,
 				colorv2.r, colorv2.g, colorv2.b,
 				colorv3.r, colorv3.g, colorv3.b,
-				colorv4.r, colorv4.g, colorv4.b
+				colorv3.r, colorv3.g, colorv3.b,
+				colorv2.r, colorv2.g, colorv2.b,
+				colorv.r, colorv.g, colorv.b
 			};
 
 			// VAO
@@ -283,12 +277,7 @@ namespace JTEpolygon {
 			glGenBuffers(1, &buf.VBO);
 			glBindBuffer(GL_ARRAY_BUFFER, buf.VBO);
 			glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
-
-			// IBO
-			glGenBuffers(1, &buf.IBO);
-			glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, buf.IBO);
-			glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
-			glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, (void*)0);
+			glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*)0);
 
 			// CBO
 			glGenBuffers(1, &buf.CBO);
@@ -311,7 +300,7 @@ namespace JTEpolygon {
 			// Drawing
 			glEnableVertexAttribArray(0);
 			glEnableVertexAttribArray(1);
-			glDrawElements(GL_TRIANGLES, sizeof(indices) / sizeof(int), GL_UNSIGNED_INT, 0);
+			glDrawArrays(GL_TRIANGLES, 0, 6);
 		}
 	}
 
@@ -321,7 +310,6 @@ namespace JTEpolygon {
 
 		glDeleteVertexArrays(1, &buf.VAO);
 		glDeleteBuffers(1, &buf.VBO);
-		glDeleteBuffers(1, &buf.IBO);
 		glDeleteBuffers(1, &buf.CBO);
 		glDeleteTextures(1, &textureID);
 
