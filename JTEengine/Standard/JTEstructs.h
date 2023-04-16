@@ -28,9 +28,7 @@ namespace JTEstructs {
 	struct Buffer_Obj {
 		GLuint VAO;
 		GLuint VBO;
-		GLuint IBO;
 		GLuint CBO;
-		GLuint IMGBO;
 	};
 
 	struct Polygon_Square {
