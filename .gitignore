@@ -19,3 +19,4 @@ x64/Debug/JasonTheEngine.vcxproj.FileListAbsolute.txt
 *.log
 *.recipe
 x64/Debug/JasonTheEngine.lib
+*.bin
