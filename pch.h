@@ -20,6 +20,7 @@
 #include <vector>
 #include <memory>
 #include <map>
+#include <algorithm>
 
 #include <windows.h>
 #include <psapi.h>
