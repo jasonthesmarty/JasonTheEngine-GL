@@ -14,6 +14,8 @@ private:
 	JTEstructs::OriginalDimensions oDimen;
 
 	GLuint textureID;
+	
+	std::shared_ptr<unsigned char[]> imageData{};
 
 	JTEshaders shaders;
 	JTEwindow* window;

@@ -4,6 +4,8 @@
 #define STB_IMAGE_IMPLEMENTATION
 #include <Dependencies/STB/stb_image.h>
 
+JTEstandard jstdimg;
+
 // Definitions
 
 JTEimage::JTEimage(int x, int y, const char* filename, JTEwindow* window, JTEshaders shaders) {
@@ -13,6 +15,25 @@ JTEimage::JTEimage(int x, int y, const char* filename, JTEwindow* window, JTEsha
 	this->shaders = shaders;
 	this->window = window;
 	this->type = 0;
+
+	// VAO
+	glGenVertexArrays(1, &buf.VAO);
+	glBindVertexArray(buf.VAO);
+
+	// VBO
+	glGenBuffers(1, &buf.VBO);
+	glBindBuffer(GL_ARRAY_BUFFER, buf.VBO);
+	glBufferData(GL_ARRAY_BUFFER, NULL, NULL, GL_STATIC_DRAW);
+
+	// CBO
+	glGenBuffers(1, &buf.CBO);
+	glBindBuffer(GL_ARRAY_BUFFER, buf.CBO);
+	glBufferData(GL_ARRAY_BUFFER, NULL, NULL, GL_STATIC_DRAW);
+
+	imageData.reset(stbi_load(img.filename, &img.stb_width, &img.stb_height, &img.stb_channels, STBI_rgb_alpha));
+	glGenTextures(1, &textureID);
+	glBindTexture(GL_TEXTURE_2D, textureID);
+	glActiveTexture(GL_TEXTURE0);
 }
 
 JTEimage::JTEimage(int x, int y, int width, int height, const char* filename, JTEwindow* window, JTEshaders shaders) {
@@ -28,25 +49,36 @@ JTEimage::JTEimage(int x, int y, int width, int height, const char* filename, JT
 	this->type = 1;
 	originalWidth = width;
 	originalHeight = height;
+
+	// VAO
+	glGenVertexArrays(1, &buf.VAO);
+	glBindVertexArray(buf.VAO);
+
+	// VBO
+	glGenBuffers(1, &buf.VBO);
+	glBindBuffer(GL_ARRAY_BUFFER, buf.VBO);
+	glBufferData(GL_ARRAY_BUFFER, NULL, NULL, GL_STATIC_DRAW);
+
+	// CBO
+	glGenBuffers(1, &buf.CBO);
+	glBindBuffer(GL_ARRAY_BUFFER, buf.CBO);
+	glBufferData(GL_ARRAY_BUFFER, NULL, NULL, GL_STATIC_DRAW);
+
+	imageData.reset(stbi_load(img.filename, &img.stb_width, &img.stb_height, &img.stb_channels, STBI_rgb_alpha));
+	glGenTextures(1, &textureID);
+	glBindTexture(GL_TEXTURE_2D, textureID);
+	glActiveTexture(GL_TEXTURE0);
 }
 
 void JTEimage::render() {
-	unsigned char* imageData = stbi_load(img.filename, &img.stb_width, &img.stb_height, &img.stb_channels, STBI_rgb_alpha);
-
-	glGenTextures(1, &textureID);
-
 	glBindTexture(GL_TEXTURE_2D, textureID);
-	
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
 
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-	
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, img.stb_width, img.stb_height, 0, GL_RGBA, GL_UNSIGNED_BYTE, imageData);
-	glGenerateMipmap(GL_TEXTURE_2D);
 
-	stbi_image_free(imageData);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, img.stb_width, img.stb_height, 0, GL_RGBA, GL_UNSIGNED_BYTE, imageData.get());
 
 	float widthHalf = (float)this->window->getWidth() / 2;
 	float heightHalf = (float)this->window->getHeight() / 2;
@@ -75,29 +107,23 @@ void JTEimage::render() {
 		{X, Y,                     0.0f, 0.0f}
 	};
 	float colors[] = {
-		1.0f, 1.0f, 1.0f,
-		1.0f, 1.0f, 1.0f,
-		1.0f, 1.0f, 1.0f,
-		1.0f, 1.0f, 1.0f,
-		1.0f, 1.0f, 1.0f,
-		1.0f, 1.0f, 1.0f
+		1.0f, 1.0f, 1.0f, 1.0f,
+		1.0f, 1.0f, 1.0f, 1.0f,
+		1.0f, 1.0f, 1.0f, 1.0f,
+		1.0f, 1.0f, 1.0f, 1.0f,
+		1.0f, 1.0f, 1.0f, 1.0f,
+		1.0f, 1.0f, 1.0f, 1.0f
 	};
 
-	// VAO
-	glGenVertexArrays(1, &buf.VAO);
-	glBindVertexArray(buf.VAO);
-
 	// VBO
-	glGenBuffers(1, &buf.VBO);
 	glBindBuffer(GL_ARRAY_BUFFER, buf.VBO);
 	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
 	glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*)0);
 
 	// CBO
-	glGenBuffers(1, &buf.CBO);
 	glBindBuffer(GL_ARRAY_BUFFER, buf.CBO);
 	glBufferData(GL_ARRAY_BUFFER, sizeof(colors), colors, GL_STATIC_DRAW);
-	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 0, (void*)0);
+	glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, 0, (void*)0);
 
 	// Transparency
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
@@ -106,9 +132,6 @@ void JTEimage::render() {
 	// Drawing
 	glEnableVertexAttribArray(0);
 	glEnableVertexAttribArray(1);
-
-	glActiveTexture(GL_TEXTURE0);
-	glBindTexture(GL_TEXTURE_2D, textureID);
 
 	glDrawArrays(GL_TRIANGLES, 0, 6);
 }
