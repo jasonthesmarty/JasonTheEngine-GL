@@ -6,41 +6,68 @@
 #include "../Dependencies/ft2build.h"
 #include FT_FREETYPE_H
 
+#define STB_IMAGE_WRITE_IMPLEMENTATION
+#include <../Dependencies/STB/stb_image_write.h>
+
 JTEstandard jstdf;
 
-JTEtext::JTEtext(const char* fontFile, int fontSize, JTEwindow* window) {
+JTEtext::JTEtext(const char* fontFile, int fontSize, JTEwindow* window, int style) {
 	this->window = window;
+	buf.VAO = 0, buf.VBO = 0, buf.CBO = 0;
 
 	FT_Library ft;
 	FT_Init_FreeType(&ft);
+
 	FT_Face face;
 	FT_New_Face(ft, fontFile, 0, &face);
+
 	FT_Set_Pixel_Sizes(face, 0, fontSize);
+
+	if (style == 1) {
+		FT_Matrix matrix{};
+		matrix.xx = 0x10000L;
+		matrix.xy = 0x06000L;
+		matrix.yx = 0L;
+		matrix.yy = 0x10000L;
+		FT_Set_Transform(face, &matrix, NULL);
+	}
+
 	glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
 
+	int letterCount = 0;
 	int atlasWidth = 0, atlasHeight = 0;
-	for (int l = 0; l < 1024; l++) {
+	int wAtlas = 0, hAtlas = 0;
+	for (int l = 32; l < 2048; l++) {
+		letterCount++;
 		FT_Load_Char(face, l, FT_LOAD_RENDER);
-		atlasWidth += face->glyph->bitmap.width;
+		atlasWidth += (int)face->glyph->bitmap.width;
 		atlasHeight = max(atlasHeight, (int)face->glyph->bitmap.rows);
+		if (letterCount == 100) {
+			wAtlas = max(wAtlas, atlasWidth);
+			hAtlas += atlasHeight;
+			letterCount = 0;
+			atlasWidth = 0;
+			atlasHeight = 0;
+		}
 	}
 
 	glGenTextures(1, &fontAtlas);
 	glBindTexture(GL_TEXTURE_2D, fontAtlas);
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, atlasWidth, atlasHeight, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, wAtlas, hAtlas, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
 	glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
 	glClearTexImage(fontAtlas, 0, GL_RED, GL_UNSIGNED_BYTE, nullptr);
 
 	int xOFF = 0;
-	for (int r = 0; r < 1024; r++) {
+	int yOFF = 0;
+	int characterCount = 0;
+	for (int r = 32; r < 2048; r++) {
 		FT_Load_Char(face, r, FT_LOAD_RENDER);
+		characterCount++;
 
-		int bottom_left_y = face->glyph->metrics.horiBearingY - face->glyph->metrics.height;
-
-		float xTexCoords = static_cast<float>(xOFF) / static_cast<float>(atlasWidth);
-		float yTexCoords = static_cast<float>(0) / static_cast<float>(atlasHeight);
-		float textureWidth = static_cast<float>(face->glyph->bitmap.width) / static_cast<float>(atlasWidth);
-		float textureHeight = static_cast<float>(face->glyph->bitmap.rows) / static_cast<float>(atlasHeight);
+		float xTexCoords    = static_cast<float>(xOFF) / static_cast<float>(wAtlas);
+		float yTexCoords    = static_cast<float>(yOFF)    / static_cast<float>(hAtlas);
+		float textureWidth  = static_cast<float>(face->glyph->bitmap.width) / static_cast<float>(wAtlas);
+		float textureHeight = static_cast<float>(face->glyph->bitmap.rows)  / static_cast<float>(hAtlas);
 
 		Character character = {
 			glm::ivec2(face->glyph->bitmap.width, face->glyph->bitmap.rows),
@@ -50,23 +77,32 @@ JTEtext::JTEtext(const char* fontFile, int fontSize, JTEwindow* window) {
 		};
 		characters.insert(std::pair<char, Character>(r, character));
 
-		glTexSubImage2D(GL_TEXTURE_2D, 0, xOFF, 0, face->glyph->bitmap.width, face->glyph->bitmap.rows, GL_RED, GL_UNSIGNED_BYTE, face->glyph->bitmap.buffer);
+		glTexSubImage2D(GL_TEXTURE_2D, 0, xOFF, yOFF, face->glyph->bitmap.width, face->glyph->bitmap.rows, GL_RED, GL_UNSIGNED_BYTE, face->glyph->bitmap.buffer);
 
-		// Set the alpha channel to 1.0 for every texel
-		unsigned char* texture_data = new unsigned char[face->glyph->bitmap.width * face->glyph->bitmap.rows * 4];
+		unsigned char* RGBAfied = new unsigned char[face->glyph->bitmap.width * face->glyph->bitmap.rows * 4];
 		for (int i = 0; i < face->glyph->bitmap.width * face->glyph->bitmap.rows; ++i) {
-			texture_data[i * 4] = face->glyph->bitmap.buffer[i];
-			texture_data[i * 4 + 1] = face->glyph->bitmap.buffer[i];
-			texture_data[i * 4 + 2] = face->glyph->bitmap.buffer[i];
-			texture_data[i * 4 + 3] = face->glyph->bitmap.buffer[i];
+			RGBAfied[i * 4] = face->glyph->bitmap.buffer[i];
+			RGBAfied[i * 4 + 1] = face->glyph->bitmap.buffer[i];
+			RGBAfied[i * 4 + 2] = face->glyph->bitmap.buffer[i];
+			RGBAfied[i * 4 + 3] = face->glyph->bitmap.buffer[i];
 		}
-		glTexSubImage2D(GL_TEXTURE_2D, 0, xOFF, 0, face->glyph->bitmap.width, face->glyph->bitmap.rows, GL_RGBA, GL_UNSIGNED_BYTE, texture_data);
+		glTexSubImage2D(GL_TEXTURE_2D, 0, xOFF, yOFF, face->glyph->bitmap.width, face->glyph->bitmap.rows, GL_RGBA, GL_UNSIGNED_BYTE, RGBAfied);
 
-		// Clean up memory
-		delete[] texture_data;
+		delete[] RGBAfied;
 
 		xOFF += face->glyph->bitmap.width;
+		if (characterCount == 100) {
+			yOFF += fontSize;
+			xOFF = 0;
+			characterCount = 0;
+		}
 	}
+
+	/*
+	unsigned char* pixels = new unsigned char[wAtlas * hAtlas * 4];
+	glGetTexImage(GL_TEXTURE_2D, 0, GL_RGBA, GL_UNSIGNED_BYTE, pixels);
+	stbi_write_bmp("text.bmp", wAtlas, hAtlas, 4, pixels);
+	*/
 
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
@@ -76,7 +112,7 @@ JTEtext::JTEtext(const char* fontFile, int fontSize, JTEwindow* window) {
 	FT_Done_Face(face);
 	FT_Done_FreeType(ft);
 
-	jstdf.println("Font Initialized");
+	// jstdf.println("Font Initialized");
 }
 
 void JTEtext::write(std::string text, int x, int y, std::array<int, 4> color, bool multi, int yChange) {
@@ -92,25 +128,25 @@ void JTEtext::write(std::string text, int x, int y, std::array<int, 4> color, bo
 	float blue = (float)color[2] / 255;
 	float alpha = (float)color[3] / 255;
 
+	// VAO
+	glGenVertexArrays(1, &buf.VAO);
+	glBindVertexArray(buf.VAO);
+
+	// VBO
+	glGenBuffers(1, &buf.VBO);
+	glBindBuffer(GL_ARRAY_BUFFER, buf.VBO);
+	glBufferData(GL_ARRAY_BUFFER, NULL, NULL, GL_STATIC_DRAW);
+
+	// CBO
+	glGenBuffers(1, &buf.CBO);
+	glBindBuffer(GL_ARRAY_BUFFER, buf.CBO);
+	glBufferData(GL_ARRAY_BUFFER, NULL, NULL, GL_STATIC_DRAW);
+
+	glBindVertexArray(buf.VAO);
+
 	if (multi) {
 		std::vector<float> vertices;
 		std::vector<float> colors;
-
-		// VAO
-		glGenVertexArrays(1, &buf.VAO);
-		glBindVertexArray(buf.VAO);
-
-		// VBO
-		glGenBuffers(1, &buf.VBO);
-		glBindBuffer(GL_ARRAY_BUFFER, buf.VBO);
-		glBufferData(GL_ARRAY_BUFFER, NULL, NULL, GL_STATIC_DRAW);
-
-		// CBO
-		glGenBuffers(1, &buf.CBO);
-		glBindBuffer(GL_ARRAY_BUFFER, buf.CBO);
-		glBufferData(GL_ARRAY_BUFFER, NULL, NULL, GL_STATIC_DRAW);
-
-		glBindVertexArray(buf.VAO);
 
 		for (int i = 0; i < text.size(); i++) {
 			Character charc = characters[text[i]];
@@ -139,12 +175,12 @@ void JTEtext::write(std::string text, int x, int y, std::array<int, 4> color, bo
 				vertices.insert(vertices.end(), std::begin(glyphVertices), std::end(glyphVertices));
 
 				float glyphColors[] = {
-					red, green, blue,
-					red, green, blue,
-					red, green, blue,
-					red, green, blue,
-					red, green, blue,
-					red, green, blue,
+					red, green, blue, alpha,
+					red, green, blue, alpha,
+					red, green, blue, alpha,
+					red, green, blue, alpha,
+					red, green, blue, alpha,
+					red, green, blue, alpha
 				};
 
 				colors.insert(colors.end(), std::begin(glyphColors), std::end(glyphColors));
@@ -161,7 +197,7 @@ void JTEtext::write(std::string text, int x, int y, std::array<int, 4> color, bo
 		// CBO
 		glBindBuffer(GL_ARRAY_BUFFER, buf.CBO);
 		glBufferData(GL_ARRAY_BUFFER, colors.size() * sizeof(float), colors.data(), GL_STATIC_DRAW);
-		glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
+		glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*)0);
 
 		// Transparency
 		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
@@ -187,22 +223,6 @@ void JTEtext::write(std::string text, int x, int y, std::array<int, 4> color, bo
 		std::vector<float> vertices;
 		std::vector<float> colors;
 
-		// VAO
-		glGenVertexArrays(1, &buf.VAO);
-		glBindVertexArray(buf.VAO);
-
-		// VBO
-		glGenBuffers(1, &buf.VBO);
-		glBindBuffer(GL_ARRAY_BUFFER, buf.VBO);
-		glBufferData(GL_ARRAY_BUFFER, NULL, NULL, GL_STATIC_DRAW);
-
-		// CBO
-		glGenBuffers(1, &buf.CBO);
-		glBindBuffer(GL_ARRAY_BUFFER, buf.CBO);
-		glBufferData(GL_ARRAY_BUFFER, NULL, NULL, GL_STATIC_DRAW);
-
-		glBindVertexArray(buf.VAO);
-
 		for (int i = 0; i < text.size(); i++) {
 			Character charc = characters[text[i]];
 
@@ -224,12 +244,12 @@ void JTEtext::write(std::string text, int x, int y, std::array<int, 4> color, bo
 			vertices.insert(vertices.end(), std::begin(glyphVertices), std::end(glyphVertices));
 
 			float glyphColors[] = {
-				red, green, blue,
-				red, green, blue,
-				red, green, blue,
-				red, green, blue,
-				red, green, blue,
-				red, green, blue,
+				red, green, blue, alpha,
+				red, green, blue, alpha,
+				red, green, blue, alpha,
+				red, green, blue, alpha,
+				red, green, blue, alpha,
+				red, green, blue, alpha
 			};
 
 			colors.insert(colors.end(), std::begin(glyphColors), std::end(glyphColors));
@@ -245,7 +265,7 @@ void JTEtext::write(std::string text, int x, int y, std::array<int, 4> color, bo
 		// CBO
 		glBindBuffer(GL_ARRAY_BUFFER, buf.CBO);
 		glBufferData(GL_ARRAY_BUFFER, colors.size() * sizeof(float), colors.data(), GL_STATIC_DRAW);
-		glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
+		glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*)0);
 
 		// Transparency
 		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
