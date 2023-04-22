@@ -14,7 +14,16 @@ private:
 
 	JTEstandard jstdw;
 
-	double seconds = glfwGetTime();
+	double elapsedSeconds = (int)round(glfwGetTime());
+
+	double previousTime = glfwGetTime();
+	double currentTime;
+
+	int Seconds = 0;
+	int Minutes = 0;
+	int Hours = 0;
+	int Days = 0;
+
 	int frames;
 
 public:
@@ -42,6 +51,8 @@ public:
 	* @brief Updates the window
 	*/
 	void update();
+
+	void vSync(bool ON_or_OFF = false);
 
 	/*
 	* @brief Clears the color and depth buffer (via glClear())
@@ -120,11 +131,33 @@ public:
 	const char* getTitle();
 
 	/*
+	* @brief Updates the width and height into variables
+	*
+	* @param width - Updates with the width of the window
+	* @param height - Updates with the height of the window
+	*/
+	void getWindowDimensions(int* width, int* height);
+	
+	/*
+	* @brief Gets the time the window has been up in seconds
+	*
+	* @param int - seconds
+	*/
+	int getTimeElapsed();
+
+	/*
+	* @brief Gets the time the window has been up in seconds, minutes, hours, and days
+	*
+	* @return std::array<int, 4> - seconds, minutes, hours, and days
+	*/
+	std::array<int, 4> getTimeElapsedFormatted();
+
+	/*
 	* @brief Frames per second of the window
 	*
 	* @param *fps - The frames per second
 	*/
-	void clock(float* fps);
+	void clock(float* fps, float* milliseconds);
 
 	/*
 	* @brief Memory usage of the application (using windows.h)

@@ -32,7 +32,7 @@ void JTEwindow::create() {
 
 	glfwMakeContextCurrent(win.window);
 	gladLoadGLLoader((GLADloadproc)glfwGetProcAddress);
-	glfwSwapInterval(1);
+	glfwSwapInterval(0);
 	glfwShowWindow(win.window);
 }
 
@@ -43,6 +43,15 @@ void JTEwindow::update() {
 	int width, height;
 	glfwGetWindowSize(win.window, &width, &height);
 	glViewport(0, 0, width, height);
+}
+
+void JTEwindow::vSync(bool ON_or_OFF) {
+	if (ON_or_OFF) {
+		glfwSwapInterval(1);
+	}
+	else {
+		glfwSwapInterval(0);
+	}
 }
 
 void JTEwindow::clearBuffers() {
@@ -97,13 +106,57 @@ const char* JTEwindow::getTitle() {
 	return win.title;
 }
 
-void JTEwindow::clock(float* fps) {
+void JTEwindow::getWindowDimensions(int* width, int* height) {
+	glfwGetWindowSize(win.window, width, height);
+}
+
+int JTEwindow::getTimeElapsed() {
+	return (int)round(glfwGetTime());
+}
+
+std::array<int, 4> JTEwindow::getTimeElapsedFormatted() {
+	std::array<int, 4> time = { 0, 0, 0, 0 };
+
+	if ((int)round(glfwGetTime()) >= elapsedSeconds + 1) {
+		Seconds++;
+		elapsedSeconds = (int)round(glfwGetTime());
+	}
+
+	if (Seconds >= 60) {
+		Seconds = 0;
+		Minutes++;
+	}
+	else if (Minutes >= 60) {
+		Minutes = 0;
+		Hours++;
+	}
+	else if (Hours >= 60) {
+		Hours = 0;
+		Days++;
+	}
+
+	time[0] = Seconds;
+	time[1] = Minutes;
+	time[2] = Hours;
+	time[3] = Days;
+
+	return time;
+}
+
+void JTEwindow::clock(float* fps, float* milliseconds) {
 	frames++;
-	if (glfwGetTime() >= seconds + 1) {
-		*fps = frames;
-		seconds = glfwGetTime();
+
+	currentTime = glfwGetTime();
+	double deltaTime = currentTime - previousTime;
+
+	if (deltaTime >= 1.0 / 30.0) {
+		*fps = (1.0f / deltaTime) * frames;
+	
+		*milliseconds = (deltaTime / frames) * 1000;
+
+		previousTime = currentTime;
+		currentTime = glfwGetTime();
 		frames = 0;
-		
 	}
 }
 
