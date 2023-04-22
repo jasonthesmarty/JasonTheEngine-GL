@@ -19,9 +19,9 @@ JTEshaders::JTEshaders() {
 	#version 460
 
 	layout (location = 0) in vec4 position;
-	layout (location = 1) in vec3 color;
+	layout (location = 1) in vec4 color;
 
-	out vec3 VertColor;
+	out vec4 VertColor;
 	out vec2 textureOut;
 
 	void main() {
@@ -35,7 +35,7 @@ JTEshaders::JTEshaders() {
 	R"(
 	#version 460
 
-	in vec3 VertColor;
+	in vec4 VertColor;
 	in vec2 textureOut;
 
 	uniform sampler2D texture0;
@@ -43,7 +43,7 @@ JTEshaders::JTEshaders() {
 	out vec4 FragColor;
 
 	void main() {
-		FragColor = texture(texture0, textureOut) * vec4(VertColor, 1.0);
+		FragColor = texture(texture0, textureOut) * vec4(VertColor);
 		
 
 	}
